@@ -6,8 +6,8 @@ RUN cd /home/gradle/project/ && gradle clean installDist
 FROM openjdk:10-jre
 
 WORKDIR app
-COPY --from=build /home/gradle/project/build/install/blueprint .
+COPY --from=build /home/gradle/project/build/install/example .
 
 VOLUME /tmp
 
-ENTRYPOINT bin/BlueprintService
+ENTRYPOINT bin/ExampleService
