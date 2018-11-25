@@ -1,14 +1,43 @@
-# Kafka Docker for local dev
+# Kafka Playground
+
+This is a basic example & reference repo for Kafka using Kotlin and Gradle.  After venturing into microservices you'll soon discover Kafka:
+
+- [Trurning the DB inside-out](https://www.confluent.io/blog/turning-the-database-inside-out-with-apache-samza/)
+- [The Data Dichotomy](https://www.confluent.io/blog/data-dichotomy-rethinking-the-way-we-treat-data-and-services/)
+- [Example Tutorial](https://medium.com/@stephane.maarek/how-to-use-apache-kafka-to-transform-a-batch-pipeline-into-a-real-time-one-831b48a6ad85)
+- [Advanced Tools Comparison](https://medium.com/@stephane.maarek/the-kafka-api-battle-producer-vs-consumer-vs-kafka-connect-vs-kafka-streams-vs-ksql-ef584274c1e)
+
+## Quickstart
+
+```sh
+# Kafka dev docker environment courtesy of Landoop
+$ docker run --rm --net=host landoop/fast-data-dev
+
+$ gradle build
+$ gradle run
+```
+
+**IntelliJ IDEA** works great for Kafka dev
+
+## Local Development
+
+Although you can setup everything you need for kafka on your machine, a great way to get started with Kafka is with a docker image from Landoop:
 
 ```sh
 $ docker run --rm --net=host landoop/fast-data-dev
 ```
 
-# AVRO Schema registry
+## Avro
 
-`gradle build` will generate Java classes from avro schema. This needs to be copied from build/generated-main-avro-java into src/main/java
+Avro is a popular tool for data schema's and coupled with Confluent's [schema registry](https://medium.com/@stephane.maarek/introduction-to-schemas-in-apache-kafka-with-the-confluent-schema-registry-3bf55e401321) it's a winner.
 
-# Kafka Local
+## Gradle & Kotlin
+
+At the moment the full power of Kafka is only available through the JVM.  I prefer a nice functional language, Kotlin and use Gradle as my package manager and build tool.
+
+`gradle build` will also generate Java classes from Avro schemas
+
+## Running Kafka locally
 
 ```sh
 # Start Zookeeper & Kafka
@@ -28,10 +57,4 @@ This is another message
 
 # Read topic messages
 bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
-```
-
-Tom's cluster
-```
-/usr/bin/kafka-console-consumer --bootstrap-server kafka:9092 --topic new-track-topic --from-beginning
-/usr/bin/kafka-topics --zookeeper kafka-zookeeper:2181 --list
 ```

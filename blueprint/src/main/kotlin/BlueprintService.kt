@@ -12,29 +12,49 @@ import org.apache.kafka.streams.kstream.Consumed
 
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+import za.co.synthesis.dog
 
 class BlueprintService {
     companion object {
-        internal val schema_registry_url = "http://localhost:8081"
-        internal val kafka_topic = "telecom_italia_data"
-        internal val kafka_app = "blueprint-service" // Think this is used to remember where this app last read the stream
+        val schema_registry_url = "http://localhost:8081"
+        val kafka_app = "blueprint-service" // Think this is used to remember where this app last read the stream
+
+        val builder = StreamsBuilder()
+        val stringSerde = Serdes.serdeFrom(String::class.java)
 
         @JvmStatic
         fun main(args: Array<String>) {
-            val builder = StreamsBuilder()
 
-            // Serde
-            //
-            val stringSerde = Serdes.serdeFrom(String::class.java)
+//            avroExample()
+//            filterExample()
+            dogExample()
+
+            val streams = KafkaStreams(builder.build(), getKafkaProperties(kafka_app = kafka_app))
+            streams.start()
+        }
+
+        fun avroExample() {
             val serdeConfig = Collections.singletonMap(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schema_registry_url)
             val italiaSerde = SpecificAvroSerde<smsCallInternet>()
             italiaSerde.configure(serdeConfig, false)
 
-            builder.stream(kafka_topic, Consumed.with(stringSerde, italiaSerde))
+            builder.stream("telecom_italia_data", Consumed.with(stringSerde, italiaSerde))
                     .foreach({ key, message -> println("Received message") })
+        }
 
-            val streams = KafkaStreams(builder.build(), getKafkaProperties(kafka_app = kafka_app))
-            streams.start()
+        fun filterExample() {
+            builder.stream("lala-test", Consumed.with(stringSerde, stringSerde))
+                    .filter({ key, message -> message == "hello" })
+                    .foreach({ key, message -> println("Message: $message") })
+        }
+
+        fun dogExample() {
+            val serdeConfig = Collections.singletonMap(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schema_registry_url)
+            val dogSerde = SpecificAvroSerde<dog>()
+            dogSerde.configure(serdeConfig, false)
+
+            builder.stream("dogs", Consumed.with(stringSerde, dogSerde))
+                    .foreach({ key, message -> println(message) })
         }
 
 
