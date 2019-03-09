@@ -1,0 +1,20 @@
+{
+  "type": "record",
+  "name": "update",
+  "doc": "This is an update schema",
+  "namespace": "za.co.synthesis",
+  "fields": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "action",
+      "type": "string"
+    },
+    {
+      "name": "data",
+      "type": "string"
+    }
+  ]
+}

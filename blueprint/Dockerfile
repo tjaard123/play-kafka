@@ -10,4 +10,4 @@ COPY --from=build /home/gradle/project/build/install/blueprint .
 
 VOLUME /tmp
 
-ENTRYPOINT bin/BlueprintService
+# ENTRYPOINT bin/BlueprintService

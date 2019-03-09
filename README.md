@@ -1,3 +1,5 @@
+***PS. Code a bit old, this repo's main goal is the README as a reference for Kafka dev***
+
 # Kafka Playground
 
 This is a basic example & reference repo for Kafka using Kotlin and Gradle.  After venturing into microservices you'll soon discover Kafka:
@@ -38,6 +40,8 @@ The [Confluent platform](https://www.confluent.io/download/) is also a brilliant
 ```sh
 confluent start
 ```
+
+[Configuring Confluent Control Centre](https://docs.confluent.io/3.3.0/control-center/docs/quickstart.html) on `http://localhost:9021`
 
 ## Avro
 
@@ -82,18 +86,20 @@ PostgreSQL and SQLLite supported out of the box, an example config:
 
 ```json
 {
-    "connection.url": "jdbc:postgresql://lena.12345678.eu-west-1.rds.amazonaws.com:5432/db-name?user=user&password=password",
-    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
-    "incrementing.column.name": "Id",
-    "key.converter.schema.registry.url": "http://polaris-kafka-cp-schema-registry:8081",
-    "key.converter": "io.confluent.connect.avro.AvroConverter",
-    "mode": "incrementing",
-    "table.whitelist": "Accounts,Users",
-    "topic.prefix": "sql-",
-    "validate.non.null": "false",
-    "value.converter.schema.registry.url": "http://polaris-kafka-cp-schema-registry:8081",
-    "value.converter": "io.confluent.connect.avro.AvroConverter"
-  }
+  "connection.url": "jdbc:postgresql://localhost:5432/postgres?user=postgres&password=mysecretpassword",
+  "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+  "incrementing.column.name": "id",
+  "key.converter.schema.registry.url": "http://localhost:8081",
+  "key.converter": "io.confluent.connect.avro.AvroConverter",
+  "mode": "timestamp+incrementing",
+  "name": "JdbcSourceConnector",
+  "table.whitelist": "dog",
+  "timestamp.column.name": "timestamp",
+  "topic.prefix": "sql-",
+  "validate.non.null": "false",
+  "value.converter.schema.registry.url": "http://localhost:8081",
+  "value.converter": "io.confluent.connect.avro.AvroConverter"
+}
 ```
 
 On a cluster you can port-forward the Kafka connect ui:
@@ -102,11 +108,71 @@ On a cluster you can port-forward the Kafka connect ui:
 $ kubectl port-forward svc/polaris-kafka-kafka-connect-ui 8000 
 ```
 
+Using PostgreSQL to test locally ([pgweb PostgreSQL web client](https://github.com/sosedoff/pgweb)):
+
+```sh
+$ docker run --rm -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+$ pgweb --host=localhost --user=postgres --pass=mysecretpassword --listen=5430
+```
+
 ## Gradle & Kotlin
 
-At the moment the full power of Kafka is only available through the JVM.  I prefer a nice functional language, Kotlin and use Gradle as my package manager and build tool.
+At the moment the full power of Kafka is only available through the JVM.  I prefer a nice functional language, Kotlin and use Gradle as my package manager and build tool.  You can produce and consume from any language but once you want to do complex joins and avro serialization Kotlin is best.
 
-`gradle build` will also generate Java classes from Avro schemas
+`build.gradle` packages:
+
+```java
+// For kafka streams
+//
+compile('org.apache.kafka:kafka-streams:2.1.1-cp1')
+compile('org.apache.kafka:kafka-clients:2.1.1-cp1')
+
+// Avro and Schema registry
+//
+compile('io.confluent:kafka-streams-avro-serde:5.1.2')
+compile('io.confluent:kafka-avro-serializer:5.1.2')
+compile('io.confluent:kafka-schema-registry-client:5.1.2')
+compile('io.confluent:monitoring-interceptors:5.1.2')
+compile('org.apache.avro:avro:1.8.2')
+```
+
+You then have a gradle command `gradle generateAvroJava` to generate POCO's from avro schemas. `gradle build` will also generate Java classes from Avro schemas.
+
+Here's an example of creating a materialized view (`KTable`) of a `KStream` of payments:
+
+![docs/ktable.jpg](docs/ktable.jpg)
+
+```kotlin
+val balanceKTable = paymentsStream
+        .groupBy({ key, _ ->
+            key.getPrinciple() // The principle account holder
+        }, Grouped.with(Serdes.String(), payments.valueSerde))
+        .aggregate({ 0 }, { _, payment: Payment, balance: Int ->
+            if (payment.getType() == "DEBIT")
+                balance - payment.getAmount()
+            else
+                balance + payment.getAmount()
+        }, Materialized.with(Serdes.String(), Serdes.Integer()))
+```
+
+- `paymentsStream` - A KStream of payment events, top row of image
+- `groupBy((key, value) -> groupKey, serdes)` - First parameter is the selector function to key the group by with, in this example it's the principle account holder. **NB**,the second parameter is the serdes for the result.
+- `aggregate(() -> initial, (key, value, accumelator) -> result, serdes)` - Sum the amount of all payments, again remember serdes.
+
+
+
+**Gotchas / Tricks**
+
+- **ALWAYS** remember to specify the **serdes** for group by, aggregate, joins etc.
+- `Ctrl + Shift + P` in IntelliJ shows type of selection
+- Get comfortable with IntelliJ, Kotlin intellisense:
+
+![docs/intellisense.jpg](docs/intellisense.jpg)
+
+The function aggregate has 4 overloads, let's run through the *last* one:
+- `initializer: (() -> VR!)!` - First parameter is the initializer function, taking no parameters and returning the first value of the aggregate. `VR` - Value Right
+- `aggregator: ((key: K!, value: V!, aggregate: VR!) -> VR!)!` - The aggregator function to be applied to every element. It takes the key, the next value and the result of the previous and returns the new result.
+- `materialized` - The serdes of the result, use `Materialized.with(keySerde, valueSerde)`
 
 ## Kafka tricks
 
@@ -121,6 +187,12 @@ bin/kafka-topics.sh --list --zookeeper localhost:2181
 bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
 This is a message
 This is another message
+
+# Produce through csv
+cat dogs.csv | kafka-console-producer --broker-list localhost:9092 --topic dogs
+
+# Produce through confluent
+confluent produce dogs
 
 # Read topic messages
 bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
@@ -149,3 +221,8 @@ done
 bin/zookeeper-server-start.sh config/zookeeper.properties
 bin/kafka-server-start.sh config/server.properties
 ```
+
+# Kafka DevOps & other references - very important
+
+https://www.slideshare.net/JeanPaulAzar1/kafka-tutorial-devops-admin-and-ops
+https://rmoff.net/2018/08/02/kafka-listeners-explained/
