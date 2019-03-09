@@ -38,10 +38,17 @@ $ docker run --rm --net=host landoop/fast-data-dev
 The [Confluent platform](https://www.confluent.io/download/) is also a brilliant dev environment:
 
 ```sh
-confluent start
+$ confluent start
 ```
 
 [Configuring Confluent Control Centre](https://docs.confluent.io/3.3.0/control-center/docs/quickstart.html) on `http://localhost:9021`
+
+To reset your confluent environment:
+
+```sh
+$ confluent destroy
+$ rm -rf /tmp/kafka-streams
+```
 
 ## Avro
 
