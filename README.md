@@ -6,6 +6,7 @@ This is a basic example & reference repo for Kafka using Kotlin and Gradle.  Aft
 
 - [Trurning the DB inside-out](https://www.confluent.io/blog/turning-the-database-inside-out-with-apache-samza/)
 - [The Data Dichotomy](https://www.confluent.io/blog/data-dichotomy-rethinking-the-way-we-treat-data-and-services/)
+- [Interactive Queries](https://www.confluent.io/kafka-summit-sf17/Interactive-Queries-in-Kafka-Streams-API)
 - [Example Tutorial](https://medium.com/@stephane.maarek/how-to-use-apache-kafka-to-transform-a-batch-pipeline-into-a-real-time-one-831b48a6ad85)
 - [Advanced Tools Comparison](https://medium.com/@stephane.maarek/the-kafka-api-battle-producer-vs-consumer-vs-kafka-connect-vs-kafka-streams-vs-ksql-ef584274c1e)
 
@@ -165,8 +166,6 @@ val balanceKTable = paymentsStream
 - `paymentsStream` - A KStream of payment events, top row of image
 - `groupBy((key, value) -> groupKey, serdes)` - First parameter is the selector function to key the group by with, in this example it's the principle account holder. **NB**,the second parameter is the serdes for the result.
 - `aggregate(() -> initial, (key, value, accumelator) -> result, serdes)` - Sum the amount of all payments, again remember serdes.
-
-
 
 **Gotchas / Tricks**
 
