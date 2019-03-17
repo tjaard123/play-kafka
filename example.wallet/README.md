@@ -21,7 +21,7 @@ Account: alice, Balance: -10
 
 The consumer (`PaymentProcessor.kt`)
 
-```java
+```kotlin
 val paymentsInflight = topic<TransactionKey, Payment>("payments-inflight")
 val transactions = topic<TransactionKey, Transaction>("transactions")
 
