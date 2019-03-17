@@ -1,0 +1,65 @@
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+// The bits that compiles the Avro (.avsc) schema files to java pojos
+buildscript {
+    ext.kotlin_version = '1.3.10'
+
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.commercehub.gradle.plugin:gradle-avro-plugin:0.15.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+apply plugin: "com.commercehub.gradle.plugin.avro"
+
+sourceCompatibility = 1.8
+
+repositories {
+    // For io.confluent.kafka dependencies
+    maven { url 'https://packages.confluent.io/maven/' }
+
+    // Primarily for the gradle-avro-plugin
+    jcenter()
+
+    // For most other stuff
+    mavenCentral()
+}
+
+dependencies {
+    // Kotlin standard library
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
+
+    // For kafka streams
+    compile('org.apache.kafka:kafka-streams:2.1.1-cp1')
+    compile('org.apache.kafka:kafka-clients:2.1.1-cp1')
+
+    // Avro and Schema registry
+    compile('io.confluent:kafka-streams-avro-serde:5.1.2')
+    compile('io.confluent:kafka-avro-serializer:5.1.2')
+    compile('io.confluent:kafka-schema-registry-client:5.1.2')
+    compile('io.confluent:monitoring-interceptors:5.1.2')
+
+    compile('org.apache.avro:avro:1.8.2')
+
+    // Logging
+    compile('org.apache.logging.log4j:log4j-slf4j-impl:2.11.0')
+
+    // Ulid generator
+    compile('de.huxhorn.sulky:de.huxhorn.sulky.ulid:8.2.0')
+}
+
+// This is a dummy - start scripts are detailed below
+mainClassName = "dummy"
+
+task PaymentProcessor(type:CreateStartScripts) {
+    applicationName = 'PaymentProcessor'
+    mainClassName = 'tjaard123.PaymentProcessorKt'
+    classpath = startScripts.classpath
+    outputDir = startScripts.outputDir
+}
+applicationDistribution.from(PaymentProcessor) { into 'bin' }

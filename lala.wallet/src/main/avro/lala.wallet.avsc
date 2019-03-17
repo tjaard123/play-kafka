@@ -1,0 +1,67 @@
+[
+  {
+    "namespace": "lala.wallet",
+    "name": "TransactionKey",
+    "type": "record",
+    "fields" : [
+      {
+        "name" : "key",
+        "type" : "string"
+      }
+    ]
+  },
+  {
+    "namespace": "lala.wallet",
+    "name": "Transaction",
+    "type": "record",
+    "fields" : [
+      {
+        "name" : "account",
+        "type" : "string"
+      },
+      {
+        "name" : "amount",
+        "type" : "int"
+      },
+      {
+        "name" : "reference",
+        "type" : "string"
+      },
+      {
+        "name" : "description",
+        "type" : "string"
+      },
+      {
+        "name" : "type",
+        "type" : "string"
+      }
+    ]
+  },
+  {
+    "namespace": "lala.wallet",
+    "name": "Payment",
+    "type": "record",
+    "fields" : [
+      {
+        "name" : "fromAccount",
+        "type" : "string"
+      },
+      {
+        "name" : "toAccount",
+        "type" : "string"
+      },
+      {
+        "name" : "amount",
+        "type" : "int"
+      },
+      {
+        "name" : "reference",
+        "type" : "string"
+      },
+      {
+        "name" : "description",
+        "type" : "string"
+      }
+    ]
+  }
+]
