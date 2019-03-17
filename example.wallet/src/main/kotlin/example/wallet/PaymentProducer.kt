@@ -30,8 +30,8 @@ fun main(args : Array<String>) {
     // Producer
     //
     val payment = Payment()
-    payment.setFromAccount("tjaard")
-    payment.setToAccount("tom")
+    payment.setFromAccount("alice")
+    payment.setToAccount("bob")
     payment.setDescription("Coffee")
     payment.setAmount(1)
 
