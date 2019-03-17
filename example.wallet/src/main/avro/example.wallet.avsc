@@ -1,17 +1,17 @@
 [
   {
-    "namespace": "lala.wallet",
+    "namespace": "example.wallet",
     "name": "TransactionKey",
     "type": "record",
     "fields" : [
       {
-        "name" : "key",
+        "name" : "fromAccount",
         "type" : "string"
       }
     ]
   },
   {
-    "namespace": "lala.wallet",
+    "namespace": "example.wallet",
     "name": "Transaction",
     "type": "record",
     "fields" : [
@@ -38,7 +38,7 @@
     ]
   },
   {
-    "namespace": "lala.wallet",
+    "namespace": "example.wallet",
     "name": "Payment",
     "type": "record",
     "fields" : [

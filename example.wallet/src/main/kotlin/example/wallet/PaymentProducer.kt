@@ -1,6 +1,5 @@
-package lala.wallet
+package example.wallet
 
-import de.huxhorn.sulky.ulid.ULID
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord

@@ -1,11 +1,8 @@
-package lala.wallet
+package example.wallet
 
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KeyValue
-import org.apache.kafka.streams.kstream.Grouped
-import org.apache.kafka.streams.kstream.Joined
 import org.apache.kafka.streams.kstream.Materialized
-import org.apache.kafka.streams.kstream.Produced
 import polaris.kafka.PolarisKafka
 
 fun main(args : Array<String>) {
@@ -36,7 +33,7 @@ fun main(args : Array<String>) {
                     }
                 }, Materialized.with(transactions.keySerde, Serdes.Integer()))
                 .toStream { key, balance ->
-                    println("Account: ${key.getKey()}, Balance: $balance")
+                    println("Account: ${key.getFromAccount()}, Balance: $balance")
                 }
 
         start()

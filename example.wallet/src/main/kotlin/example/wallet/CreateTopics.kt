@@ -1,4 +1,4 @@
-package lala.wallet
+package example.wallet
 
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.AdminClientConfig
