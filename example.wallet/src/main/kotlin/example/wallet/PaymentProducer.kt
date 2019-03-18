@@ -11,7 +11,9 @@ fun main(args : Array<String>) {
     val properties = Properties()
     properties[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = "localhost:9092"
     val paymentsTopic = "payments-inflight"
-    val numberOfPayments = 10
+    val transactionsTopic = "transactions"
+    val depositAmount = 0
+    val numberOfPayments = 1
 
     // Serialization config
     //
@@ -27,13 +29,19 @@ fun main(args : Array<String>) {
     properties["unclean.leader.election.enable"] = false
     properties["max.in.flight.requests.per.connection"] = 1
 
-    // Producer
+    // Deposit producer
     //
-    val payment = Payment()
-    payment.setFromAccount("alice")
-    payment.setToAccount("bob")
-    payment.setDescription("Coffee")
-    payment.setAmount(1)
+    if (depositAmount > 0) {
+        val transaction = Transaction(depositAmount, null, "#0", "Deposit", "CREDIT")
+        val transactionProducer = KafkaProducer<TransactionKey, Transaction>(properties)
+        transactionProducer.send(ProducerRecord(transactionsTopic, TransactionKey("alice"), transaction))
+        transactionProducer.flush()
+        transactionProducer.close()
+    }
+
+    // Payments producer
+    //
+    val payment = Payment("alice", "bob", 1, "", "Coffee")
 
     val producer = KafkaProducer<TransactionKey, Payment>(properties)
 

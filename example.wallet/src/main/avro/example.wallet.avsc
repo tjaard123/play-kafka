@@ -16,12 +16,13 @@
     "type": "record",
     "fields" : [
       {
-        "name" : "account",
-        "type" : "string"
-      },
-      {
         "name" : "amount",
         "type" : "int"
+      },
+      {
+        "name" : "accountToCredit",
+        "type" : ["null", "string"],
+        "default" : null
       },
       {
         "name" : "reference",

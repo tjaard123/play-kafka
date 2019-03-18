@@ -54,7 +54,7 @@ class PolarisKafka {
     private val properties = Properties()
     private val serdeConfig : Map<String, String>
     private val streamsBuilder : StreamsBuilder
-    private var streams : KafkaStreams? = null
+    var streams : KafkaStreams? = null
 
     constructor(applicationId : String,
                 bootstrapServers : String = System.getenv(KAFKA_BOOTSTRAP_SERVERS_ENVVAR),
