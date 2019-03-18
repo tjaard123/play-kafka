@@ -1,6 +1,6 @@
-***PS. Code a bit old, this repo's main goal is the README as a reference for Kafka dev***
-
 # Kafka Playground
+
+***Development resources, references and an example wallet***
 
 This is a basic example & reference repo for Kafka using Kotlin and Gradle.  After venturing into microservices you'll soon discover Kafka:
 
