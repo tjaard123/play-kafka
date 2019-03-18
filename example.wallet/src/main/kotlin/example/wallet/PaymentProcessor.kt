@@ -1,8 +1,10 @@
 package example.wallet
 
 import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.kstream.Materialized
+import org.apache.kafka.streams.state.KeyValueStore
 import polaris.kafka.PolarisKafka
 
 fun main(args : Array<String>) {
@@ -31,7 +33,10 @@ fun main(args : Array<String>) {
                     else {
                         balance - transaction.getAmount()
                     }
-                }, Materialized.with(transactions.keySerde, Serdes.Integer()))
+                }, Materialized.`as`<TransactionKey, Int, KeyValueStore<Bytes, ByteArray>>("balances")
+                        .withCachingDisabled()
+                        .withKeySerde(transactions.keySerde)
+                        .withValueSerde(Serdes.Integer()))
                 .toStream { key, balance ->
                     println("Account: ${key.getFromAccount()}, Balance: $balance")
                 }
