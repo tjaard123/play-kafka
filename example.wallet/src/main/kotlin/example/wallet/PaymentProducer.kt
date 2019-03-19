@@ -13,13 +13,13 @@ fun main(args : Array<String>) {
     val paymentsTopic = "payments-inflight"
     val transactionsTopic = "transactions"
     val depositAmount = 0
-    val numberOfPayments = 1
+    val numberOfPayments = 11
 
     // Serialization config
     //
     properties["schema.registry.url"] = "http://localhost:8081"
-    properties[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = io.confluent.kafka.serializers.KafkaAvroSerializer::class.java
-    properties[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = io.confluent.kafka.serializers.KafkaAvroSerializer::class.java
+    properties["key.serializer"] = "io.confluent.kafka.serializers.KafkaAvroSerializer"
+    properties["value.serializer"] = "io.confluent.kafka.serializers.KafkaAvroSerializer"
 
     // To minimize data loss and preserve message order
     //

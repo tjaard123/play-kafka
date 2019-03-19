@@ -3,6 +3,7 @@ package example.wallet
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.AdminClientConfig
 import org.apache.kafka.clients.admin.NewTopic
+import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.errors.TopicExistsException
 import java.util.*
 import java.util.concurrent.ExecutionException
@@ -10,10 +11,11 @@ import java.util.concurrent.TimeUnit
 
 fun main(args : Array<String>) {
 
+    val partitions = 12
+    val replicationFactor = 1
+
     val properties = Properties()
     properties[AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG] = "localhost:9092"
-    val partitions = 1
-    val replicationFactor = 1
 
     val adminClient = AdminClient.create(properties)
 
