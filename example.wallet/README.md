@@ -40,3 +40,7 @@ Produced message: payments-inflight-0@7
 Produced message: payments-inflight-0@8
 Produced message: payments-inflight-0@9
 ```
+
+## References
+
+- [Online Event Processing (OLEP vs OLTP)](https://queue.acm.org/detail.cfm?id=3321612)
